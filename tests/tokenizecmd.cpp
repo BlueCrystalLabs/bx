@@ -1,11 +1,29 @@
 /*
- * Copyright 2012-2014 Branimir Karadzic. All rights reserved.
+ * Copyright 2012-2015 Branimir Karadzic. All rights reserved.
  * License: http://www.opensource.org/licenses/BSD-2-Clause
  */
 
 #include "test.h"
 #include <bx/tokenizecmd.h>
+#include <bx/commandline.h>
 #include <string.h>
+
+TEST(commandLine)
+{
+	const char* args[] =
+	{
+		"-s",
+		"--long",
+	};
+
+	bx::CommandLine cmdLine(BX_COUNTOF(args), args);
+
+	CHECK(cmdLine.hasArg("long") );
+	CHECK(cmdLine.hasArg('s') );
+
+	// non-existing argument
+	CHECK(!cmdLine.hasArg('x') );
+}
 
 TEST(tokenizeCommandLine)
 {

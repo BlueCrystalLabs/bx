@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2015 Branimir Karadzic. All rights reserved.
  * License: http://www.opensource.org/licenses/BSD-2-Clause
  */
 
@@ -8,6 +8,8 @@
 
 namespace bx
 {
+	BX_FLOAT4_INLINE float4_t float4_rcp_ni(float4_t _a);
+
 	BX_FLOAT4_INLINE float4_t float4_shuf_xAzC_ni(float4_t _a, float4_t _b)
 	{
 		const float4_t xAyB   = float4_shuf_xAyB(_a, _b);
@@ -42,14 +44,6 @@ namespace bx
 		return result;
 	}
 
-	BX_FLOAT4_INLINE float4_t float4_rcp_ni(float4_t _a)
-	{
-		const float4_t one    = float4_splat(1.0f);
-		const float4_t result = float4_div(one, _a);
-
-		return result;
-	}
-
 	BX_FLOAT4_INLINE float4_t float4_div_nr_ni(float4_t _a, float4_t _b)
 	{
 		const float4_t oneish  = float4_isplat(0x3f800001);
@@ -57,6 +51,14 @@ namespace bx
 		const float4_t iter0   = float4_mul(_a, est);
 		const float4_t tmp1    = float4_nmsub(_b, est, oneish);
 		const float4_t result  = float4_madd(tmp1, iter0, iter0);
+
+		return result;
+	}
+
+	BX_FLOAT4_INLINE float4_t float4_rcp_ni(float4_t _a)
+	{
+		const float4_t one    = float4_splat(1.0f);
+		const float4_t result = float4_div(one, _a);
 
 		return result;
 	}

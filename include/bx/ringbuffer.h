@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Branimir Karadzic. All rights reserved.
+ * Copyright 2010-2015 Branimir Karadzic. All rights reserved.
  * License: http://www.opensource.org/licenses/BSD-2-Clause
  */
 
@@ -14,6 +14,11 @@ namespace bx
 {
 	class RingBufferControl
 	{
+		BX_CLASS(RingBufferControl
+			, NO_COPY
+			, NO_ASSIGNMENT
+			);
+
 	public:
 		RingBufferControl(uint32_t _size)
 			: m_size(_size)
@@ -82,14 +87,15 @@ namespace bx
 		uint32_t m_current;
 		uint32_t m_write;
 		uint32_t m_read;
-
-	private:
-		RingBufferControl(const RingBufferControl&);
-		void operator=(const RingBufferControl&);
 	};
 
 	class SpScRingBufferControl
 	{
+		BX_CLASS(SpScRingBufferControl
+			, NO_COPY
+			, NO_ASSIGNMENT
+			);
+
 	public:
 		SpScRingBufferControl(uint32_t _size)
 			: m_size(_size)
@@ -162,15 +168,17 @@ namespace bx
 		uint32_t m_current;
 		uint32_t m_write;
 		uint32_t m_read;
-
-	private:
-		SpScRingBufferControl(const SpScRingBufferControl&);
-		void operator=(const SpScRingBufferControl&);
 	};
 
 	template <typename Control>
 	class ReadRingBufferT
 	{
+		BX_CLASS(ReadRingBufferT
+			, NO_DEFAULT_CTOR
+			, NO_COPY
+			, NO_ASSIGNMENT
+			);
+
 	public:
 		ReadRingBufferT(Control& _control, const char* _buffer, uint32_t _size)
 			: m_control(_control)
@@ -193,11 +201,11 @@ namespace bx
 
 		void read(char* _data, uint32_t _len)
 		{
-			const uint32_t end = (m_read + _len) % m_control.m_size;
+			const uint32_t eof = (m_read + _len) % m_control.m_size;
 			uint32_t wrap = 0;
 			const char* from = &m_buffer[m_read];
 
-			if (end < m_read)
+			if (eof < m_read)
 			{
 				wrap = m_control.m_size - m_read;
 				memcpy(_data, from, wrap);
@@ -207,7 +215,7 @@ namespace bx
 
 			memcpy(_data, from, _len-wrap);
 
-			m_read = end;
+			m_read = eof;
 		}
 
 		void skip(uint32_t _len)
@@ -219,10 +227,6 @@ namespace bx
 	private:
 		template <typename Ty>
 		friend class WriteRingBufferT;
-
-		ReadRingBufferT();
-		ReadRingBufferT(const Control&);
-		void operator=(const Control&);
 
 		Control& m_control;
 		uint32_t m_read;
@@ -237,6 +241,12 @@ namespace bx
 	template <typename Control>
 	class WriteRingBufferT
 	{
+		BX_CLASS(WriteRingBufferT
+			, NO_DEFAULT_CTOR
+			, NO_COPY
+			, NO_ASSIGNMENT
+			);
+
 	public:
 		WriteRingBufferT(Control& _control, char* _buffer, uint32_t _size)
 			: m_control(_control)
@@ -261,11 +271,11 @@ namespace bx
 
 		void write(const char* _data, uint32_t _len)
 		{
-			const uint32_t end = (m_write + _len) % m_control.m_size;
+			const uint32_t eof = (m_write + _len) % m_control.m_size;
 			uint32_t wrap = 0;
 			char* to = &m_buffer[m_write];
 
-			if (end < m_write)
+			if (eof < m_write)
 			{
 				wrap = m_control.m_size - m_write;
 				memcpy(to, _data, wrap);
@@ -275,16 +285,16 @@ namespace bx
 
 			memcpy(to, _data, _len-wrap);
 
-			m_write = end;
+			m_write = eof;
 		}
 
 		void write(ReadRingBufferT<Control>& _read, uint32_t _len)
 		{
-			const uint32_t end = (_read.m_read + _len) % _read.m_control.m_size;
+			const uint32_t eof = (_read.m_read + _len) % _read.m_control.m_size;
 			uint32_t wrap = 0;
 			const char* from = &_read.m_buffer[_read.m_read];
 
-			if (end < _read.m_read)
+			if (eof < _read.m_read)
 			{
 				wrap = _read.m_control.m_size - _read.m_read;
 				write(from, wrap);
@@ -293,7 +303,7 @@ namespace bx
 
 			write(from, _len-wrap);
 
-			_read.m_read = end;
+			_read.m_read = eof;
 		}
 
 		void skip(uint32_t _len)
@@ -303,10 +313,6 @@ namespace bx
 		}
 
 	private:
-		WriteRingBufferT();
-		WriteRingBufferT(const WriteRingBufferT<Control>&);
-		void operator=(const WriteRingBufferT<Control>&);
-
 		Control& m_control;
 		uint32_t m_write;
 		uint32_t m_end;
