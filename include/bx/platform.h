@@ -24,6 +24,7 @@
 #define BX_PLATFORM_RPI        0
 #define BX_PLATFORM_WINDOWS    0
 #define BX_PLATFORM_WINRT      0
+#define BX_PLATFORM_WINPHONE   0
 #define BX_PLATFORM_XBOX360    0
 #define BX_PLATFORM_XBOXONE    0
 
@@ -151,6 +152,10 @@
 #	else
 #		undef  BX_PLATFORM_WINRT
 #		define BX_PLATFORM_WINRT 1
+#       if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+#           undef  BX_PLATFORM_WINPHONE
+#           define BX_PLATFORM_WINPHONE 1
+#       endif // (WINAP_FAMILY == WINAPI_FAMILY_PHONE_APP)
 #	endif
 #elif defined(__VCCOREVER__)
 // RaspberryPi compiler defines __linux__
@@ -175,7 +180,7 @@
 #elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
 #	undef  BX_PLATFORM_OSX
 #	define BX_PLATFORM_OSX 1
-#elif defined(EMSCRIPTEN)
+#elif defined(__EMSCRIPTEN__)
 #	undef  BX_PLATFORM_EMSCRIPTEN
 #	define BX_PLATFORM_EMSCRIPTEN 1
 #elif defined(__ORBIS__)
@@ -200,6 +205,7 @@
 						|| BX_PLATFORM_NACL \
 						|| BX_PLATFORM_OSX \
 						|| BX_PLATFORM_QNX \
+						|| BX_PLATFORM_PS4 \
 						|| BX_PLATFORM_RPI \
 						)
 
@@ -260,6 +266,8 @@
 #	define BX_PLATFORM_NAME "RaspberryPi"
 #elif BX_PLATFORM_WINDOWS
 #	define BX_PLATFORM_NAME "Windows"
+#elif BX_PLATFORM_WINPHONE
+#	define BX_PLATFORM_NAME "WinRT Phone"
 #elif BX_PLATFORM_WINRT
 #	define BX_PLATFORM_NAME "WinRT"
 #elif BX_PLATFORM_XBOX360
