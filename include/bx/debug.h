@@ -53,7 +53,11 @@ namespace bx
 #if BX_PLATFORM_ANDROID
 		__android_log_write(ANDROID_LOG_DEBUG, "", _out);
 #elif BX_PLATFORM_WINDOWS || BX_PLATFORM_WINRT || BX_PLATFORM_XBOX360
+#if defined(_DEBUG)
 		OutputDebugStringA(_out);
+#else
+        BX_UNUSED(_out);
+#endif
 #elif BX_PLATFORM_IOS || BX_PLATFORM_OSX
 #	if defined(__OBJC__)
 		NSLog(@"%s", _out);
