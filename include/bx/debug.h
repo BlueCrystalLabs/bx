@@ -51,7 +51,7 @@ namespace bx
 	inline void debugOutput(const char* _out)
 	{
 #if BX_PLATFORM_ANDROID
-		__android_log_write(ANDROID_LOG_DEBUG, "", _out);
+		__android_log_write(ANDROID_LOG_DEBUG, BX_STRINGIZE(BX_CONFIG_DEBUG_PREFIX), _out);
 #elif BX_PLATFORM_WINDOWS || BX_PLATFORM_WINRT || BX_PLATFORM_XBOX360
 #if defined(_DEBUG)
 		OutputDebugStringA(_out);
