@@ -83,7 +83,7 @@ namespace bx
 			int result = pthread_mutex_lock(&m_mutex);
 			BX_CHECK(0 == result, "pthread_mutex_lock %d", result);
 
-#		if BX_PLATFORM_NACL || BX_PLATFORM_OSX || BX_PLATFORM_IOS
+#		if BX_PLATFORM_NACL || BX_PLATFORM_OSX
 			BX_UNUSED(_msecs);
 			BX_CHECK(-1 == _msecs, "NaCl, iOS and OSX don't support pthread_cond_timedwait at this moment.");
 			while (0 == result
@@ -91,17 +91,38 @@ namespace bx
 			{
 				result = pthread_cond_wait(&m_cond, &m_mutex);
 			}
-#		else
-			timespec ts;
-			clock_gettime(CLOCK_REALTIME, &ts);
-			ts.tv_sec += _msecs/1000;
-			ts.tv_nsec += (_msecs%1000)*1000;
-
-			while (0 == result
-			&&     0 >= m_count)
-			{
-				result = pthread_cond_timedwait(&m_cond, &m_mutex, &ts);
-			}
+#		elif BX_PLATFORM_IOS
+            if (-1 == _msecs)
+            {
+                while (0 == result
+                &&     0 >= m_count)
+                {
+                    result = pthread_cond_wait(&m_cond, &m_mutex);
+                }
+            }
+            else
+            {
+                timespec ts;
+                ts.tv_sec = _msecs/1000;
+                ts.tv_nsec = (_msecs%1000)*1000;
+                
+                while (0 == result
+                &&     0 >= m_count)
+                {
+                    result = pthread_cond_timedwait_relative_np(&m_cond, &m_mutex, &ts);
+                }
+            }
+#       else
+            timespec ts;
+            clock_gettime(CLOCK_REALTIME, &ts);
+            ts.tv_sec += _msecs/1000;
+            ts.tv_nsec += (_msecs%1000)*1000;
+            
+            while (0 == result
+            &&     0 >= m_count)
+            {
+                result = pthread_cond_timedwait(&m_cond, &m_mutex, &ts);
+            }
 #		endif // BX_PLATFORM_NACL || BX_PLATFORM_OSX
 			bool ok = 0 == result;
 
