@@ -47,7 +47,7 @@
 #	elif BX_PLATFORM_LINUX || BX_PLATFORM_RPI
 #		include <unistd.h> // syscall
 #		include <sys/syscall.h>
-#	elif BX_PLATFORM_OSX
+#	elif BX_PLATFORM_OSX || BX_PLATFORM_IOS
 #		include <mach/mach.h> // mach_task_basic_info
 #	elif BX_PLATFORM_ANDROID
 #		include "debug.h" // getTid is not implemented...
@@ -134,7 +134,7 @@ namespace bx
 			? pages * sysconf(_SC_PAGESIZE)
 			: 0
 			;
-#elif BX_PLATFORM_OSX
+#elif BX_PLATFORM_OSX || BX_PLATFORM_IOS
 		mach_task_basic_info info;
 		mach_msg_type_number_t infoCount = MACH_TASK_BASIC_INFO_COUNT;
 
