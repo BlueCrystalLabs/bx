@@ -29,7 +29,7 @@ namespace bx
 
 		void push(Ty* _ptr) // producer only
 		{
-			LwMutexScope $(m_write);
+			LwMutexScope temp(m_write);
 			m_queue.push(_ptr);
 		}
 
