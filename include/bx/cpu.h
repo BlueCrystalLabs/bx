@@ -111,7 +111,10 @@ namespace bx
 	inline int64_t atomicFetchAndAdd<int64_t>(volatile int64_t* _ptr, int64_t _add)
 	{
 #if BX_COMPILER_MSVC
-#	if _WIN32_WINNT >= 0x600
+#	if _WIN32_WINNT >= 0x600 && 0
+		//TODO: Figure out why this isn't defined on win32
+		// _InterlockedExchangeAdd is defined in intrin.h and there's a pragma intrinsic() above for it.
+		// _InterlockedExchangeAdd64 is defined in xatomic.h and pragma intrinsic() fails for it (may succeed on a x64 build).
 		return _InterlockedExchangeAdd64( (volatile int64_t*)_ptr, _add);
 #	else
 		int64_t oldVal;
